@@ -1,0 +1,30 @@
+From bc4c0aea3b6209e2ee0533cca0336c23c4923d76 Mon Sep 17 00:00:00 2001
+From: Garrett Brown <garrett.brown@aclima.io>
+Date: Thu, 2 Sep 2021 23:48:39 -0700
+Subject: [PATCH] Use browserify-fs package
+
+Requires the additional packages added to package.json:
+
+  * browserify-fs
+  * util
+
+---
+ build/src/index.js | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/build/src/index.js b/build/src/index.js
+index 73b5d71..aeb7b2e 100644
+--- a/build/src/index.js
++++ b/build/src/index.js
+@@ -7,7 +7,7 @@
+  */
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.getPem = void 0;
+-const fs = require("fs");
++const fs = require("browserify-fs");
+ const forge = require("node-forge");
+ const util_1 = require("util");
+ const readFile = util_1.promisify(fs.readFile);
+-- 
+2.30.2
+

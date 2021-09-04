@@ -1,0 +1,52 @@
+From 4a8e2ebb68393228717dc66e9d3b8a6865cdfa2d Mon Sep 17 00:00:00 2001
+From: Garrett Brown <garrett.brown@aclima.io>
+Date: Thu, 2 Sep 2021 23:12:23 -0700
+Subject: [PATCH] Use readable-stream package
+
+---
+ lib/data-stream.js   | 2 +-
+ lib/sign-stream.js   | 2 +-
+ lib/verify-stream.js | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/lib/data-stream.js b/lib/data-stream.js
+index 3535d31..9bdb600 100644
+--- a/lib/data-stream.js
++++ b/lib/data-stream.js
+@@ -1,6 +1,6 @@
+ /*global module, process*/
+ var Buffer = require('safe-buffer').Buffer;
+-var Stream = require('stream');
++var Stream = require('readable-stream');
+ var util = require('util');
+ 
+ function DataStream(data) {
+diff --git a/lib/sign-stream.js b/lib/sign-stream.js
+index 6a7ee42..61be9f1 100644
+--- a/lib/sign-stream.js
++++ b/lib/sign-stream.js
+@@ -2,7 +2,7 @@
+ var Buffer = require('safe-buffer').Buffer;
+ var DataStream = require('./data-stream');
+ var jwa = require('jwa');
+-var Stream = require('stream');
++var Stream = require('readable-stream');
+ var toString = require('./tostring');
+ var util = require('util');
+ 
+diff --git a/lib/verify-stream.js b/lib/verify-stream.js
+index 39f7c73..c7c9d9e 100644
+--- a/lib/verify-stream.js
++++ b/lib/verify-stream.js
+@@ -2,7 +2,7 @@
+ var Buffer = require('safe-buffer').Buffer;
+ var DataStream = require('./data-stream');
+ var jwa = require('jwa');
+-var Stream = require('stream');
++var Stream = require('readable-stream');
+ var toString = require('./tostring');
+ var util = require('util');
+ var JWS_REGEX = /^[a-zA-Z0-9\-_]+?\.[a-zA-Z0-9\-_]+?\.([a-zA-Z0-9\-_]+)?$/;
+-- 
+2.30.2
+

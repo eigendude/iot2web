@@ -5,9 +5,11 @@
 
 /* eslint @typescript-eslint/no-var-requires: "off" */
 
+const commonjs = require("@rollup/plugin-commonjs");
 const globals = require("rollup-plugin-node-globals");
 const polyfills = require("rollup-plugin-node-polyfills");
 const resolve = require("@rollup/plugin-node-resolve").nodeResolve;
+const urlResolve = require("rollup-plugin-url-resolve");
 
 module.exports = {
   mount: {
@@ -38,12 +40,19 @@ module.exports = {
     knownEntrypoints: [],
     rollup: {
       plugins: [
+        urlResolve(),
         // Fix "Uncaught TypeError: bufferEs6.hasOwnProperty is not a function"
         resolve({
           preferBuiltins: false,
         }),
         globals(),
         polyfills(),
+        commonjs({
+          // Treat bundle.run and unpkg URLs as CommonJS
+          include: [/^https:\/\/bundle\.run/, /^https:\/\/unpkg\.com/],
+          // ...except for unpkg ?module URLs
+          exclude: [/^https:\/\/unpkg\.com.*?\?.*?\bmodule\b/],
+        }),
       ],
     },
   },

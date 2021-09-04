@@ -9,5 +9,8 @@
 /build
 /web_modules
 
+# CommonJS ignores
+/.cjsescache
+
 # Misc
 .DS_Store

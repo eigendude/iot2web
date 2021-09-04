@@ -1,0 +1,26 @@
+From e9375ef02af5e9a36f09b16ad86272e1fbdcf2e6 Mon Sep 17 00:00:00 2001
+From: Garrett Brown <garrett.brown@aclima.io>
+Date: Fri, 3 Sep 2021 00:12:16 -0700
+Subject: [PATCH] Fix import of readable-stream objects
+
+---
+ index.js | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/index.js b/index.js
+index 68d723a..7af7926 100644
+--- a/index.js
++++ b/index.js
+@@ -1,6 +1,6 @@
+-var Writable = require('readable-stream/writable');
+-var Readable = require('readable-stream/readable');
+-var Duplex = require('readable-stream/duplex');
++var Writable = require('readable-stream').Writable;
++var Readable = require('readable-stream').Readable;
++var Duplex = require('readable-stream').Duplex;
+ 
+ var DUMMY = new Buffer(0);
+ var noop = function() {};
+-- 
+2.30.2
+

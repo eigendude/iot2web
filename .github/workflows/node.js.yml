@@ -57,7 +57,7 @@ jobs:
 
       - name: yarn install
         if: steps.restore-node.outputs.cache-hit != 'true'
-        run: yarn install
+        run: TESTING=1 yarn install
 
       - name: yarn audit-ci
         run: yarn audit-ci

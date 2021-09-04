@@ -1,0 +1,24 @@
+From 54f78e513fc9be2d6aca5a9cad3c79247b54b23e Mon Sep 17 00:00:00 2001
+From: Garrett Brown <garrett.brown@aclima.io>
+Date: Fri, 3 Sep 2021 00:15:00 -0700
+Subject: [PATCH] Fix import of readable-stream objects
+
+---
+ index.js | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/index.js b/index.js
+index 87777ac..2f4dbe4 100644
+--- a/index.js
++++ b/index.js
+@@ -1,5 +1,5 @@
+-var Writable = require('readable-stream/writable');
+-var Readable = require('readable-stream/readable');
++var Writable = require('readable-stream').Writable;
++var Readable = require('readable-stream').Readable;
+ var peek = require('level-peek');
+ var util = require('util');
+ var once = require('once');
+-- 
+2.30.2
+

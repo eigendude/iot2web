@@ -1,0 +1,89 @@
+From 9893c7c8b2a581a4a3cd5a7e2ed1aa3fe0ec15e4 Mon Sep 17 00:00:00 2001
+From: Garrett Brown <garrett.brown@aclima.io>
+Date: Fri, 3 Sep 2021 16:31:36 -0700
+Subject: [PATCH] Fix circular dependency
+
+---
+ build/src/any.js            | 10 ++++------
+ build/src/fromproto3json.js |  2 +-
+ build/src/toproto3json.js   |  2 +-
+ 3 files changed, 6 insertions(+), 8 deletions(-)
+
+diff --git a/build/src/any.js b/build/src/any.js
+index 964befa..164af80 100644
+--- a/build/src/any.js
++++ b/build/src/any.js
+@@ -14,8 +14,6 @@
+ // limitations under the License.
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.googleProtobufAnyFromProto3JSON = exports.googleProtobufAnyToProto3JSON = void 0;
+-const fromproto3json_1 = require("./fromproto3json");
+-const toproto3json_1 = require("./toproto3json");
+ // https://github.com/protocolbuffers/protobuf/blob/ba3836703b4a9e98e474aea2bac8c5b49b6d3b5c/python/google/protobuf/json_format.py#L850
+ const specialJSON = new Set([
+     'google.protobuf.Any',
+@@ -26,7 +24,7 @@ const specialJSON = new Set([
+     'google.protobuf.Timestamp',
+     'google.protobuf.Value',
+ ]);
+-function googleProtobufAnyToProto3JSON(obj) {
++function googleProtobufAnyToProto3JSON(obj, toProto3JSONFn) {
+     // https://developers.google.com/protocol-buffers/docs/proto3#json
+     // If the Any contains a value that has a special JSON mapping, it will be converted as follows:
+     // {"@type": xxx, "value": yyy}.
+@@ -41,7 +39,7 @@ function googleProtobufAnyToProto3JSON(obj) {
+         throw new Error(`googleProtobufAnyToProto3JSON: cannot find type ${typeName}: ${err}`);
+     }
+     const valueMessage = type.decode(obj.value);
+-    const valueProto3JSON = toproto3json_1.toProto3JSON(valueMessage);
++    const valueProto3JSON = toProto3JSONFn(valueMessage);
+     if (specialJSON.has(typeName)) {
+         return {
+             '@type': obj.type_url,
+@@ -52,7 +50,7 @@ function googleProtobufAnyToProto3JSON(obj) {
+     return valueProto3JSON;
+ }
+ exports.googleProtobufAnyToProto3JSON = googleProtobufAnyToProto3JSON;
+-function googleProtobufAnyFromProto3JSON(root, json) {
++function googleProtobufAnyFromProto3JSON(root, json, fromProto3JSONFn) {
+     // Not all possible JSON values can hold Any, only real objects.
+     if (json === null || typeof json !== 'object' || Array.isArray(json)) {
+         throw new Error('googleProtobufAnyFromProto3JSON: must be an object to decode google.protobuf.Any');
+@@ -76,7 +74,7 @@ function googleProtobufAnyFromProto3JSON(root, json) {
+         }
+         value = json.value;
+     }
+-    const valueMessage = fromproto3json_1.fromProto3JSON(type, value);
++    const valueMessage = fromProto3JSONFn(type, value);
+     if (valueMessage === null) {
+         return {
+             type_url: typeUrl,
+diff --git a/build/src/fromproto3json.js b/build/src/fromproto3json.js
+index efa4ba7..c8c6ee8 100644
+--- a/build/src/fromproto3json.js
++++ b/build/src/fromproto3json.js
+@@ -56,7 +56,7 @@ function fromProto3JSONToInternalRepresentation(type, json) {
+     }
+     // Types that cannot be "null"
+     if (fullyQualifiedTypeName === '.google.protobuf.Any') {
+-        return any_1.googleProtobufAnyFromProto3JSON(type.root, json);
++        return any_1.googleProtobufAnyFromProto3JSON(type.root, json, fromProto3JSON);
+     }
+     if (fullyQualifiedTypeName === '.google.protobuf.Struct') {
+         if (typeof json !== 'object') {
+diff --git a/build/src/toproto3json.js b/build/src/toproto3json.js
+index d5c0093..f15e962 100644
+--- a/build/src/toproto3json.js
++++ b/build/src/toproto3json.js
+@@ -37,7 +37,7 @@ function toProto3JSON(obj) {
+     // Types that require special handling according to
+     // https://developers.google.com/protocol-buffers/docs/proto3#json
+     if (typeName === '.google.protobuf.Any') {
+-        return any_1.googleProtobufAnyToProto3JSON(obj);
++        return any_1.googleProtobufAnyToProto3JSON(obj, toProto3JSON);
+     }
+     if (typeName === '.google.protobuf.Value') {
+         return value_1.googleProtobufValueToProto3JSON(obj);
+-- 
+2.30.2
+
